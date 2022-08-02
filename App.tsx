@@ -17,6 +17,8 @@ import {
   Text,
   useColorScheme,
   View,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
 } from 'react-native';
 
 import {
@@ -26,6 +28,14 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+
+const AnimatedHeader = () => {
+  return (
+    <View style={styles.animatedHeader}>
+      <Text>Animated Header</Text>
+    </View>
+  );
+};
 
 const Section: React.FC<
   PropsWithChildren<{
@@ -64,12 +74,21 @@ const App = () => {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
+  const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const scrolling = e.nativeEvent.contentOffset.y;
+
+    console.log(scrolling);
+  };
+
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
+        style={backgroundStyle}
+        onScroll={onScroll}
+        scrollEventThrottle={16}>
+        <AnimatedHeader />
         <Header />
         <View
           style={{
@@ -96,6 +115,12 @@ const App = () => {
 };
 
 const styles = StyleSheet.create({
+  animatedHeader: {
+    height: 200,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'orange',
+  },
   sectionContainer: {
     marginTop: 32,
     paddingHorizontal: 24,
