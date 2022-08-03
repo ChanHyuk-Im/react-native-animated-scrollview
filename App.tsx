@@ -8,7 +8,7 @@
  * @format
  */
 
-import React, {useState, type PropsWithChildren} from 'react';
+import React, {useRef, type PropsWithChildren} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -19,6 +19,7 @@ import {
   View,
   NativeSyntheticEvent,
   NativeScrollEvent,
+  Animated,
 } from 'react-native';
 
 import {
@@ -30,14 +31,14 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 type AnimatedHeaderProps = {
-  height?: number;
+  height: Animated.Value | Animated.AnimatedInterpolation;
 };
 
-const AnimatedHeader = ({height = 200}: AnimatedHeaderProps) => {
+const AnimatedHeader = ({height}: AnimatedHeaderProps) => {
   return (
-    <View style={{...styles.animatedHeader, height}}>
+    <Animated.View style={{...styles.animatedHeader, height}}>
       <Text>Animated Header</Text>
-    </View>
+    </Animated.View>
   );
 };
 
@@ -72,7 +73,12 @@ const Section: React.FC<
 };
 
 const App = () => {
-  const [animatedFlag, setAnimatedFlag] = useState(false);
+  const scrolling = useRef(new Animated.Value(0)).current;
+  const height = scrolling.interpolate({
+    inputRange: [0, 200],
+    outputRange: [100, 50],
+    extrapolate: 'clamp',
+  });
 
   const isDarkMode = useColorScheme() === 'dark';
 
@@ -81,25 +87,20 @@ const App = () => {
   };
 
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const scrolling = e.nativeEvent.contentOffset.y;
-
-    if(scrolling > 100) {
-      setAnimatedFlag(true);
-    } else {
-      setAnimatedFlag(false);
-    }
     console.log(scrolling);
+
+    scrolling.setValue(e.nativeEvent.contentOffset.y);
   };
 
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AnimatedHeader height={animatedFlag ? 100 : 200} />
-      <ScrollView
+      <AnimatedHeader height={height} />
+      <Animated.ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}
         onScroll={onScroll}
-        scrollEventThrottle={16}>
+        scrollEventThrottle={10}>
         <Header />
         <View
           style={{
@@ -120,7 +121,7 @@ const App = () => {
           </Section>
           <LearnMoreLinks />
         </View>
-      </ScrollView>
+      </Animated.ScrollView>
     </SafeAreaView>
   );
 };
