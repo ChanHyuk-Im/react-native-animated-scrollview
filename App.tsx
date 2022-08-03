@@ -8,7 +8,7 @@
  * @format
  */
 
-import React, {type PropsWithChildren} from 'react';
+import React, {useState, type PropsWithChildren} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -29,9 +29,13 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-const AnimatedHeader = () => {
+type AnimatedHeaderProps = {
+  height?: number;
+};
+
+const AnimatedHeader = ({height = 200}: AnimatedHeaderProps) => {
   return (
-    <View style={styles.animatedHeader}>
+    <View style={{...styles.animatedHeader, height}}>
       <Text>Animated Header</Text>
     </View>
   );
@@ -68,6 +72,8 @@ const Section: React.FC<
 };
 
 const App = () => {
+  const [animatedFlag, setAnimatedFlag] = useState(false);
+
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
@@ -77,18 +83,23 @@ const App = () => {
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const scrolling = e.nativeEvent.contentOffset.y;
 
+    if(scrolling > 100) {
+      setAnimatedFlag(true);
+    } else {
+      setAnimatedFlag(false);
+    }
     console.log(scrolling);
   };
 
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+      <AnimatedHeader height={animatedFlag ? 100 : 200} />
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}
         onScroll={onScroll}
         scrollEventThrottle={16}>
-        <AnimatedHeader />
         <Header />
         <View
           style={{
@@ -116,7 +127,6 @@ const App = () => {
 
 const styles = StyleSheet.create({
   animatedHeader: {
-    height: 200,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'orange',
