@@ -41,10 +41,7 @@ const App = () => {
       <Animated.View style={{...styles.animatedHeaderContainer, height}}>
         <Animated.Text style={{...styles.animatedHeaderText, fontSize}}>Animated Header</Animated.Text>
       </Animated.View>
-      <Animated.ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        onScroll={onScroll}
-        scrollEventThrottle={10}>
+      <Animated.ScrollView scrollEventThrottle={10} onScroll={onScroll}>
         {Array(20).fill(0).map((_, index) => {
           return (
             <View key={index} style={styles.listItemContainer}>
@@ -59,7 +56,6 @@ const App = () => {
 
 const styles = StyleSheet.create({
   animatedHeaderContainer: {
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'orange',
